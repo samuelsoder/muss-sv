@@ -55,6 +55,7 @@ with log_action('Splitting CCNet shards into smaller subshards'):
         'en': 15,
         'fr': 25,
         'pt': 6,
+        'sv': 10,
         'es': 13,  # We would need about 20 shards for 1B sentences, but there are only 13
     }[language]
     ccnet_filepaths = [ccnet_dir / f'{language}_head_{i:04d}.json.gz' for i in range(n_shards)]
