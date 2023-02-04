@@ -65,6 +65,7 @@ with log_action('Splitting CCNet shards into smaller subshards'):
     n_docs_per_file = 50000
     executor = get_executor(cluster=cluster, slurm_partition='debug', timeout_min=1 * 30, slurm_array_parallelism=16)
     jobs = []
+    print(f'File Paths: {ccnet_filepaths}')
     with executor.batch():
         for ccnet_filepath, output_dir in zip(ccnet_filepaths, output_dirs):
             if output_dir.exists():
