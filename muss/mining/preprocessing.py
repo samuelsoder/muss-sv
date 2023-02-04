@@ -57,6 +57,11 @@ def has_too_much_punctuation(text):
 
 def has_low_lm_prob(text, language):
     # The slope is the linear coefficient that links the log probability and the length of the sentence in characters
+
+    # No perplexity model for Swedish yet
+    if language == 'sv':
+        return False
+
     model_dir, slope = {
         'en': (RESOURCES_DIR / 'models/language_models/kenlm_enwiki', -0.6),
         'fr': (RESOURCES_DIR / 'models/language_models/kenlm_frwiki', -0.6),
