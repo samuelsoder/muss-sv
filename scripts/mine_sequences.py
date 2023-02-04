@@ -113,6 +113,7 @@ with log_action('Creating base index'):
         if len(train_sentences) == n_train_sentences:
             break
 
+    print(f'NB training sentences: {len(train_sentences)}')
     base_index_dir = dataset_dir / f'base_indexes/'
     base_index_dir.mkdir(exist_ok=True, parents=True)
     # This can be very long
