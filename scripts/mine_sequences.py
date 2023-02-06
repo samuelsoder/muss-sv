@@ -36,12 +36,22 @@ from muss.mining.nn_search import (
 )
 from muss.mining.filtering import SimplicityScorer
 
+
+def get_input(printout, default_val):
+    try:
+        path = input(printout)
+    except OSError:
+        path = default_val
+    return path
+
+
 ccnet_dir = Path(
-    input(
-        'Please download the CCNet corpus from https://github.com/facebookresearch/cc_net and enter the path to the downloaded data: '
+    get_input(
+        'Please download the CCNet corpus from https://github.com/facebookresearch/cc_net and enter the path to the downloaded data: ',
+        './resources/test-datasets/sv'
     )
 )
-language = input('What language do you want to process? (en/fr/es/pt/sv): ')
+language = get_input('What language do you want to process? (en/fr/es/pt/sv): ', 'sv')
 cluster = 'local'
 dataset_dir = get_dataset_dir('uts') / language
 # For large jobs only
@@ -104,7 +114,7 @@ get_embeddings = lambda sentences: get_laser_embeddings(
 
 # Create base index
 with log_action('Creating base index'):
-    n_train_sentences = 10**7
+    n_train_sentences = 10 ** 7
     train_sentences = []
     for sentences_path in get_sentences_paths(dataset_dir):
         for sentence in yield_lines(sentences_path):
