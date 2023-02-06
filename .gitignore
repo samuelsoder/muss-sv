@@ -9,3 +9,7 @@ ts-notebooks
 teste
 models
 personal_examples
+
+.idea
+
+*/.DS_Store
