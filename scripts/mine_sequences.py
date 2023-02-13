@@ -3,7 +3,7 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
-
+import sys
 from pathlib import Path
 
 import faiss
@@ -45,10 +45,12 @@ def get_input(printout, default_val):
     return path
 
 
+verbose = '-v' in sys.argv
+
 ccnet_dir = Path(
     get_input(
         'Please download the CCNet corpus from https://github.com/facebookresearch/cc_net and enter the path to the downloaded data: ',
-        './resources/test-datasets/sv'
+        './resources/test-datasets/sv-small'
     )
 )
 language = get_input('What language do you want to process? (en/fr/es/pt/sv): ', 'sv')
@@ -134,6 +136,8 @@ with log_action('Creating base index'):
 
 # Compute embeddings
 with log_action('Computing embeddings'):
+    if verbose:
+        print("Indexes...")
     cache_dir = get_cache_dir(dataset_dir) / embeddings_type_name
     indexes_dir = cache_dir / 'indexes' / f'base-index-{get_file_hash(base_index_path)}'
     indexes_dir.mkdir(exist_ok=True, parents=True)
@@ -145,6 +149,8 @@ with log_action('Computing embeddings'):
         timeout_min=4 * 60,
         slurm_array_parallelism=slurm_array_parallelism,
     )
+    if verbose:
+        print("Computing and saving embeddings")
     with executor.batch():
         for sentences_path in set(query_sentences_paths + db_sentences_paths):
             if get_index_path(sentences_path, indexes_dir).exists():
