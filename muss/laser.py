@@ -52,10 +52,14 @@ def get_laser_embeddings(
         bpe_filepath = get_temp_filepath()
         parallel_file_encoder(input_filepath, bpe_filepath)
     with log_action('Geting LASER embedding'):
+        print('Getting encoder...')
         encoder = get_laser_encoder(encoder_path, max_tokens=max_tokens)
+        print('Encoding sentences...')
         embeddings = encoder.encode_sentences(read_lines(bpe_filepath))
+        print('unlinking files...')
         input_filepath.unlink()
         bpe_filepath.unlink()
+        print('asserting results...')
         assert embeddings.shape[0] == len(sentences)
     del encoder
     if normalize_l2:
