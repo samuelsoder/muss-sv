@@ -36,24 +36,27 @@ from muss.mining.nn_search import (
 )
 from muss.mining.filtering import SimplicityScorer
 
+args = sys.argv
 
-def get_input(printout, default_val):
+
+def get_arg(i, default_val):
     try:
-        path = input(printout)
+        val = args[i]
     except OSError:
-        path = default_val
-    return path
+        val = default_val
+    return val
 
 
 verbose = '-v' in sys.argv
 
 ccnet_dir = Path(
-    get_input(
-        'Please download the CCNet corpus from https://github.com/facebookresearch/cc_net and enter the path to the downloaded data: ',
+    get_arg(
+        1,
         './resources/test-datasets/sv-small'
     )
 )
-language = get_input('What language do you want to process? (en/fr/es/pt/sv): ', 'sv')
+language = get_arg(2, 'sv')
+print(f'Processing data at {ccnet_dir} in {language}')
 cluster = 'local'
 dataset_dir = get_dataset_dir('uts') / language
 # For large jobs only
@@ -67,7 +70,7 @@ with log_action('Splitting CCNet shards into smaller subshards'):
         'en': 15,
         'fr': 25,
         'pt': 6,
-        'sv': 2,
+        'sv': 6,
         'es': 13,  # We would need about 20 shards for 1B sentences, but there are only 13
     }[language]
     ccnet_filepaths = [ccnet_dir / f'{language}_head_{i:04d}.json.gz' for i in range(n_shards)]
