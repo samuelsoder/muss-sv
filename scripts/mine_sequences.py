@@ -149,6 +149,7 @@ with log_action('Computing embeddings'):
         slurm_partition=slurm_partition,
         timeout_min=4 * 60,
         slurm_array_parallelism=slurm_array_parallelism,
+        mem_gb=28,
     )
     if verbose:
         print("Computing and saving embeddings")
@@ -163,7 +164,6 @@ with log_action('Computing embeddings'):
                 compute_and_save_embeddings, sentences_path, base_index_path, get_embeddings, indexes_dir=indexes_dir
             )
             jobs.append(job)
-            job.result()
     print([job.job_id for job in jobs])
     [job.result() for job in tqdm(jobs)]
 
@@ -178,6 +178,7 @@ with log_action('Mining paraphrases'):
         slurm_partition=slurm_partition,
         timeout_min=4 * 60,
         slurm_array_parallelism=slurm_array_parallelism,
+        mem_gb=28,
     )
     # Run NN search query file by query file
     with executor.batch():
@@ -204,7 +205,6 @@ with log_action('Mining paraphrases'):
                 delete_intermediary=True,
             )
             jobs.append(job)
-            job.result()
     print([job.job_id for job in jobs])
     [job.result() for job in tqdm(jobs)]
 
