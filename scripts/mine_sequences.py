@@ -144,28 +144,32 @@ with log_action('Computing embeddings'):
     indexes_dir.mkdir(exist_ok=True, parents=True)
     db_sentences_paths = get_sentences_paths(dataset_dir)
     query_sentences_paths = db_sentences_paths
-    executor = get_executor(
-        cluster=cluster,
-        slurm_partition=slurm_partition,
-        timeout_min=4 * 60,
-        slurm_array_parallelism=slurm_array_parallelism,
-        mem_gb=28,
-    )
-    if verbose:
-        print("Computing and saving embeddings")
-    with executor.batch():
-        for sentences_path in set(query_sentences_paths + db_sentences_paths):
-            if get_index_path(sentences_path, indexes_dir).exists():
-                continue
-            # Should take about 30 minutes each
-            # print(f"Computing and saving embeddins for {sentences_path}")
-            # compute_and_save_embeddings(sentences_path, base_index_path, get_embeddings, indexes_dir=indexes_dir)
-            job = executor.submit(
-                compute_and_save_embeddings, sentences_path, base_index_path, get_embeddings, indexes_dir=indexes_dir
-            )
-            jobs.append(job)
-    print([job.job_id for job in jobs])
-    [job.result() for job in tqdm(jobs)]
+    print("Computing and saving embeddings")
+    # executor = get_executor(
+    #     cluster=cluster,
+    #     slurm_partition=slurm_partition,
+    #     timeout_min=4 * 60,
+    #     slurm_array_parallelism=slurm_array_parallelism,
+    #     mem_gb=28,
+    # )
+    # with executor.batch():
+    #     for sentences_path in set(query_sentences_paths + db_sentences_paths):
+    #         if get_index_path(sentences_path, indexes_dir).exists():
+    #             continue
+    #         # Should take about 30 minutes each
+    #         job = executor.submit(
+    #             compute_and_save_embeddings, sentences_path, base_index_path, get_embeddings, indexes_dir=indexes_dir
+    #         )
+    #         jobs.append(job)
+    # print([job.job_id for job in jobs])
+    # [job.result() for job in tqdm(jobs)]
+
+    for sentences_path in set(query_sentences_paths + db_sentences_paths):
+        if get_index_path(sentences_path, indexes_dir).exists():
+            continue
+        # Should take about 30 minutes each
+        print(f"Computing and saving embeddins for {sentences_path}")
+        compute_and_save_embeddings(sentences_path, base_index_path, get_embeddings, indexes_dir=indexes_dir)
 
 # Mine the paraphrases
 with log_action('Mining paraphrases'):
@@ -173,40 +177,46 @@ with log_action('Mining paraphrases'):
     nn_search_results_dir.mkdir(exist_ok=True, parents=True)
     topk = 8
     nprobe = 16
-    executor = get_executor(
-        cluster=cluster,
-        slurm_partition=slurm_partition,
-        timeout_min=4 * 60,
-        slurm_array_parallelism=slurm_array_parallelism,
-        mem_gb=28,
-    )
+    # executor = get_executor(
+    #     cluster=cluster,
+    #     slurm_partition=slurm_partition,
+    #     timeout_min=4 * 60,
+    #     slurm_array_parallelism=slurm_array_parallelism,
+    #     mem_gb=28,
+    # )
     # Run NN search query file by query file
-    with executor.batch():
-        for query_sentences_path in tqdm(query_sentences_paths, desc='submitting queries'):
-            if get_results_path(query_sentences_path, db_sentences_paths, topk, nprobe, nn_search_results_dir).exists():
-                continue
-            # Should take about ~1h30 each
-            # compute_and_save_nn_batched(
-            #     query_sentences_path,
-            #     db_sentences_paths,
-            #     topk,
-            #     nprobe,
-            #     indexes_dir,
-            #     nn_search_results_dir,
-            #     delete_intermediary=True)
-            job = executor.submit(
-                compute_and_save_nn_batched,
-                query_sentences_path,
-                db_sentences_paths,
-                topk,
-                nprobe,
-                indexes_dir,
-                nn_search_results_dir,
-                delete_intermediary=True,
-            )
-            jobs.append(job)
-    print([job.job_id for job in jobs])
-    [job.result() for job in tqdm(jobs)]
+    # with executor.batch():
+    #     for query_sentences_path in tqdm(query_sentences_paths, desc='submitting queries'):
+    #         if get_results_path(query_sentences_path, db_sentences_paths, topk, nprobe, nn_search_results_dir).exists():
+    #             continue
+    #         # Should take about ~1h30 each
+    #         job = executor.submit(
+    #             compute_and_save_nn_batched,
+    #             query_sentences_path,
+    #             db_sentences_paths,
+    #             topk,
+    #             nprobe,
+    #             indexes_dir,
+    #             nn_search_results_dir,
+    #             delete_intermediary=True,
+    #         )
+    #         jobs.append(job)
+    # print([job.job_id for job in jobs])
+    # [job.result() for job in tqdm(jobs)]
+
+    for query_sentences_path in tqdm(query_sentences_paths, desc='submitting queries'):
+        if get_results_path(query_sentences_path, db_sentences_paths, topk, nprobe, nn_search_results_dir).exists():
+            continue
+        # Should take about ~1h30 each
+        print(f'compute_and_save_nn_batched with {query_sentences_path}')
+        compute_and_save_nn_batched(
+            query_sentences_path,
+            db_sentences_paths,
+            topk,
+            nprobe,
+            indexes_dir,
+            nn_search_results_dir,
+            delete_intermediary=True)
 
 # Filter candidate paraphrases
 with log_action('Filtering candidate paraphrases'):
