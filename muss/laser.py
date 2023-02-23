@@ -49,6 +49,7 @@ def get_laser_embeddings(
             ),
             n_jobs=n_encoding_jobs,
         )
+        print('Parallel file encoder fetched...')
         bpe_filepath = get_temp_filepath()
         parallel_file_encoder(input_filepath, bpe_filepath)
     with log_action('Geting LASER embedding'):

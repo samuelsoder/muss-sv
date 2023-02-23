@@ -118,16 +118,21 @@ def get_real_n_jobs(n_jobs):
 
 def get_parallel_file_preprocessor(file_preprocessor, n_jobs):
     if n_jobs == 1:
+        print('One job only...')
         return file_preprocessor
     n_jobs = get_real_n_jobs(n_jobs)
 
     @wraps(file_preprocessor)
     def parallel_file_preprocessor(input_filepath, output_filepath):
         temp_filepaths = get_temp_filepaths(n_jobs)
+        print('Splitting file')
         split_file(input_filepath, temp_filepaths, round_robin=True)
         preprocessed_temp_filepaths = get_temp_filepaths(n_jobs)
+        print('Defining tasks')
         tasks = [delayed(file_preprocessor)(*paths) for paths in zip(temp_filepaths, preprocessed_temp_filepaths)]
+        print('Running in parallel')
         Parallel(n_jobs=n_jobs)(tasks)
+        print('Merging files')
         merge_files(preprocessed_temp_filepaths, output_filepath, round_robin=True)
         delete_files(temp_filepaths)
         delete_files(preprocessed_temp_filepaths)
