@@ -61,7 +61,7 @@ cluster = 'local'
 dataset_dir = get_dataset_dir('uts') / language
 # For large jobs only
 slurm_partition = 'debug'
-slurm_array_parallelism = 8
+slurm_array_parallelism = 1024
 
 # Split CCNet shards into subshards
 with log_action('Splitting CCNet shards into smaller subshards'):
@@ -119,7 +119,7 @@ get_embeddings = lambda sentences: get_laser_embeddings(
 
 # Create base index
 with log_action('Creating base index'):
-    n_train_sentences = 3 * (10 ** 6)
+    n_train_sentences = 10 ** 7
     train_sentences = []
     for sentences_path in get_sentences_paths(dataset_dir):
         for sentence in yield_lines(sentences_path):
@@ -150,7 +150,6 @@ with log_action('Computing embeddings'):
         slurm_partition=slurm_partition,
         timeout_min=4 * 60,
         slurm_array_parallelism=slurm_array_parallelism,
-        mem_gb=28,
     )
     with executor.batch():
         for sentences_path in set(query_sentences_paths + db_sentences_paths):

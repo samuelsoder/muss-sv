@@ -130,7 +130,7 @@ def get_parallel_file_preprocessor(file_preprocessor, n_jobs):
         preprocessed_temp_filepaths = get_temp_filepaths(n_jobs)
         print('Defining tasks')
         tasks = [delayed(file_preprocessor)(*paths) for paths in zip(temp_filepaths, preprocessed_temp_filepaths)]
-        print('Running in parallel')
+        print('Running tasks')
         Parallel(n_jobs=n_jobs)(tasks)
         print('Merging files')
         merge_files(preprocessed_temp_filepaths, output_filepath, round_robin=True)

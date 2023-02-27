@@ -101,7 +101,7 @@ def compute_and_save_embeddings(sentences_path, base_index_path, get_embeddings,
     return index_path
 
 
-def get_nearest_sentence_ids(query_index, db_index, topk, nprobe, batch_size=1024, use_gpu=False):
+def get_nearest_sentence_ids(query_index, db_index, topk, nprobe, batch_size=1024, use_gpu=True):
     try:
         faiss.ParameterSpace().set_index_parameter(db_index, 'nprobe', nprobe)
     except RuntimeError as e:

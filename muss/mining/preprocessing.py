@@ -26,7 +26,7 @@ def yield_json_documents_from_compressed(compressed_path):
         yield json.loads(document)
 
 
-def split_ccnet_shard(shard_path, output_dir, n_docs_per_subshard=5000):
+def split_ccnet_shard(shard_path, output_dir, n_docs_per_subshard=10000):
     '''We need to split the shards even more for the embeddings to fit in memory'''
 
     def write_lines_to_compressed_file(lines, compressed_filepath):
@@ -120,13 +120,13 @@ def get_n_cells(n_total_samples):
 
 
 def get_index_name():
-    n_total_samples = int(1e8)
+    n_total_samples = int(1e9)
     n_cells = get_n_cells(n_total_samples)
     sq_size = 8
     pca_dim = 512
     embeddings_dim = 1024
     index_size = (n_total_samples * embeddings_dim * 4) / (32 / sq_size) / (embeddings_dim / pca_dim)
-    print(f'Expected index size: {index_size // 1e8}GB')
+    print(f'Expected index size: {index_size // 1e9}GB')
     return f'PCAR{pca_dim},IVF{n_cells},SQ{sq_size}'
 
 
