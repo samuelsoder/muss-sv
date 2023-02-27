@@ -114,12 +114,12 @@ with log_action('Tokenizing sentences'):
 
 embeddings_type_name = f'laser_{language}'
 get_embeddings = lambda sentences: get_laser_embeddings(
-    sentences, max_tokens=500, language=language, n_encoding_jobs=8
+    sentences, max_tokens=800, language=language, n_encoding_jobs=8
 )  # noqa: E731
 
 # Create base index
 with log_action('Creating base index'):
-    n_train_sentences = 10 ** 7
+    n_train_sentences = 3 * (10 ** 6)
     train_sentences = []
     for sentences_path in get_sentences_paths(dataset_dir):
         for sentence in yield_lines(sentences_path):
@@ -181,7 +181,6 @@ with log_action('Mining paraphrases'):
         slurm_partition=slurm_partition,
         timeout_min=4 * 60,
         slurm_array_parallelism=slurm_array_parallelism,
-        mem_gb=28,
     )
     # Run NN search query file by query file
     with executor.batch():
